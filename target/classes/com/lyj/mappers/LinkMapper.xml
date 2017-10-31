@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyj.dao.LinkDao">
+
+	<resultMap type="Link" id="LinkResult">
+		<id property="id" column="id" />
+		<result property="linkname" column="linkname"/>
+		<result property="linkurl" column="linkurl"/>
+		<result property="orderNum" column="orderNum"/>
+	</resultMap>
+
+	<select id="getLinkData" resultMap="LinkResult">
+		SELECT * FROM t_link ORDER BY orderNum
+	</select>
+
+	<select id="listLinkData" parameterType="Map" resultMap="LinkResult">
+		select * from t_link ORDER BY orderNum
+		<if test="start!=null and pageSize!=null">
+		 	limit #{start},#{pageSize}
+		 </if>
+	</select>
+	
+	<select id="getTotal" parameterType="Map" resultType="Long">
+		SELECT COUNT(*) FROM t_link
+	</select>
+	
+<!-- 如果你的数据库支持自动生成主键的字段（比如 MySQL 和 SQL Server），
+	那么你可以设置 useGeneratedKeys=”true”，然后再把 keyProperty 设置到目标属性上就OK了。
+	例如，如果上面的 Author 表已经对 id 使用了自动生成的列类型 -->
+<!-- insert语句如果要返回自动生成的key值，一般会在insert里加入useGeneratedKeys属性  	
+	（仅对 insert 和 update 有用）这会令 MyBatis 使用 JDBC 的 getGeneratedKeys 方法来取出由数据库内部生成的主键
+	（比如：像 MySQL 和 SQL Server 这样的关系数据库管理系统的自动递增字段），默认值：false。-->
+	<insert id="addLink" parameterType="Link" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO t_link (id,linkname,linkurl,orderNum) VALUES (NULL,#{linkname},#{linkurl},#{orderNum})
+	</insert>
+	
+	<update id="updatelink" parameterType="Link">
+		update t_link
+		<set>
+			<if test="linkname!=null and linkname!=''">
+		 		linkname=#{linkname},
+		 	</if>
+		 	<if test="linkurl!=null and linkurl!=''">
+		 		linkurl=#{linkurl},
+		 	</if>
+		 	<if test="orderNum!=null">
+		 		orderNum=#{orderNum},
+		 	</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<delete id="deleteLink" parameterType="Integer">
+		delete from t_link where id=#{id}
+	</delete>
+	
+</mapper>
